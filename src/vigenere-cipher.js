@@ -10,25 +10,90 @@ const { NotImplementedError } = require('../extensions/index.js');
  * 
  * const reverseMachine = new VigenereCipheringMachine(false);
  * 
- * directMachine.encrypt('attack at dawn!', 'alphonse') => 'AEIHQX SX DLLU!'
+ * directMachine.encrypt('attack at dawn!', 'ALPHABETonse') => 'AEIHQX SX DLLU!'
  * 
- * directMachine.decrypt('AEIHQX SX DLLU!', 'alphonse') => 'ATTACK AT DAWN!'
+ * directMachine.decrypt('AEIHQX SX DLLU!', 'ALPHABETonse') => 'ATTACK AT DAWN!'
  * 
- * reverseMachine.encrypt('attack at dawn!', 'alphonse') => '!ULLD XS XQHIEA'
+ * reverseMachine.encrypt('attack at dawn!', 'ALPHABETonse') => '!ULLD XS XQHIEA'
  * 
- * reverseMachine.decrypt('AEIHQX SX DLLU!', 'alphonse') => '!NWAD TA KCATTA'
+ * reverseMachine.decrypt('AEIHQX SX DLLU!', 'ALPHABETonse') => '!NWAD TA KCATTA'
  * 
  */
 class VigenereCipheringMachine {
-  encrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  constructor(isDirect) {
+    this.isDirect = isDirect;
   }
-  decrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+
+  encrypt(str, argument) {
+    if (!str || !argument) throw new Error("Incorrect arguments!");
+
+    const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    str = str.toUpperCase();
+    argument = argument.toUpperCase();
+
+    while (argument.length < str.length) {
+      argument += argument;
+    }
+
+    let encoded = '', counter = 0;
+    for (let i = 0; i < str.length; i++) {
+      if (ALPHABET.includes(str[i])) {
+        let newLetter = str.charCodeAt(i) + argument.charCodeAt(counter) - 65;
+        if (newLetter > 90) {
+          newLetter -= 26;
+        }
+        encoded += String.fromCharCode(newLetter);
+        counter++;
+      }
+
+      else {
+        encoded += str[i];
+      }
+    }
+
+    if (this.isDirect === true || this.isDirect === undefined) {
+      return encoded;
+    }
+    return encoded.split('').reverse().join('');
+  }
+
+  decrypt(str, argument) {
+    if (!str || !argument) throw new Error("Incorrect arguments!");
+
+    const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    str = str.toUpperCase();
+    argument = argument.toUpperCase();
+
+    while (argument.length < str.length) {
+      argument += argument;
+    }
+
+    let encoded = '', counter = 0;
+
+    for (let i = 0; i < str.length; i++) {
+      if (ALPHABET.includes(str[i])) {
+        let newLetter = str.charCodeAt(i) - argument.charCodeAt(counter) + 65;
+        if (newLetter < 65) {
+          newLetter += 26;
+        }
+        encoded += String.fromCharCode(newLetter);
+        counter++;
+      }
+
+      else {
+        encoded += str[i];
+      }
+    }
+
+    if (this.isDirect === true || this.isDirect === undefined) {
+      return encoded;
+    }
+    return encoded.split('').reverse().join('');
   }
 }
+
+const cipher = new VigenereCipheringMachine();
+cipher.decrypt('HSVD AJAL ^^', 'behappy');
 
 module.exports = {
   VigenereCipheringMachine
